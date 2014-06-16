@@ -11,4 +11,7 @@
 
 @interface NTViewController : UIViewController
 
+- (IBAction) removeLastTake:(id)sender;
+- (IBAction) stopRecording:(id)sender;
+
 @end
