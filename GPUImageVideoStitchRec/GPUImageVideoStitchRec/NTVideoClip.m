@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Nao Tokui. All rights reserved.
 //
 
-#import "NTVideoTake.h"
+#import "NTVideoClip.h"
 
-@implementation NTVideoTake
+@implementation NTVideoClip
 
 - (AVAsset *)videoAsset
 {

@@ -7,16 +7,25 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "NTVideoTake.h"
+#import "NTVideoClip.h"
 
 @interface NTVideoComposition : NSObject
 
 @property (nonatomic, readonly) float duration;
+@property (nonatomic, setter=setRecording:) BOOL  isRecording;
+@property (nonatomic) BOOL  isLastTakeReadyToRemove;
 
-- (void) addTake: (NTVideoTake *) take;
-- (void) concatenateVideos;
+- (BOOL) canAddVideoClip;
 
-- (void) removeLastTake;
-- (CGSize) lastTakeRange;
+- (void) addVideoClip: (NTVideoClip *) take;
+- (void) concatenateVideosWithCompletionHandler:(void (^)(AVAssetExportSessionStatus))handler;
+
+- (void) removeLastVideoClip;
+- (CGSize) lastVideoClipRange;
+
+- (float) recordingDuration;
+- (float) recordedDuration;
+
+- (float) maxDurationAllowed;
 
 @end

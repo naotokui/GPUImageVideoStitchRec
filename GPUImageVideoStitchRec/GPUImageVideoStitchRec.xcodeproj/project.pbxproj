@@ -23,7 +23,7 @@
 		0D4ADFAB194E834D00F809AC /* GPUImageVideoStitchRecTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D4ADFAA194E834D00F809AC /* GPUImageVideoStitchRecTests.m */; };
 		0D730BCE194E86D300312614 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D730BC5194E846A00312614 /* libGPUImage.a */; };
 		0D730BD2194EA44700312614 /* NTVideoComposition.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D730BD1194EA44700312614 /* NTVideoComposition.m */; };
-		0D730BD5194EA45100312614 /* NTVideoTake.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D730BD4194EA45100312614 /* NTVideoTake.m */; };
+		0D730BD5194EA45100312614 /* NTVideoClip.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D730BD4194EA45100312614 /* NTVideoClip.m */; };
 		0D730BD8194EAAC100312614 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0D730BD7194EAAC100312614 /* AVFoundation.framework */; };
 		0D730BDB194EB33D00312614 /* NTRecProgressView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0D730BDA194EB33D00312614 /* NTRecProgressView.m */; };
 /* End PBXBuildFile section */
@@ -89,8 +89,8 @@
 		0D730BBD194E846A00312614 /* GPUImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GPUImage.xcodeproj; path = ../GPUImage/framework/GPUImage.xcodeproj; sourceTree = "<group>"; };
 		0D730BD0194EA44700312614 /* NTVideoComposition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTVideoComposition.h; sourceTree = "<group>"; };
 		0D730BD1194EA44700312614 /* NTVideoComposition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTVideoComposition.m; sourceTree = "<group>"; };
-		0D730BD3194EA45100312614 /* NTVideoTake.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTVideoTake.h; sourceTree = "<group>"; };
-		0D730BD4194EA45100312614 /* NTVideoTake.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTVideoTake.m; sourceTree = "<group>"; };
+		0D730BD3194EA45100312614 /* NTVideoClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTVideoClip.h; sourceTree = "<group>"; };
+		0D730BD4194EA45100312614 /* NTVideoClip.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTVideoClip.m; sourceTree = "<group>"; };
 		0D730BD7194EAAC100312614 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		0D730BD9194EB33D00312614 /* NTRecProgressView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NTRecProgressView.h; sourceTree = "<group>"; };
 		0D730BDA194EB33D00312614 /* NTRecProgressView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NTRecProgressView.m; sourceTree = "<group>"; };
@@ -166,8 +166,8 @@
 				0D730BDA194EB33D00312614 /* NTRecProgressView.m */,
 				0D730BD0194EA44700312614 /* NTVideoComposition.h */,
 				0D730BD1194EA44700312614 /* NTVideoComposition.m */,
-				0D730BD3194EA45100312614 /* NTVideoTake.h */,
-				0D730BD4194EA45100312614 /* NTVideoTake.m */,
+				0D730BD3194EA45100312614 /* NTVideoClip.h */,
+				0D730BD4194EA45100312614 /* NTVideoClip.m */,
 				0D4ADF97194E834D00F809AC /* Images.xcassets */,
 				0D4ADF86194E834D00F809AC /* Supporting Files */,
 			);
@@ -347,7 +347,7 @@
 				0D4ADF90194E834D00F809AC /* NTAppDelegate.m in Sources */,
 				0D4ADF8C194E834D00F809AC /* main.m in Sources */,
 				0D730BDB194EB33D00312614 /* NTRecProgressView.m in Sources */,
-				0D730BD5194EA45100312614 /* NTVideoTake.m in Sources */,
+				0D730BD5194EA45100312614 /* NTVideoClip.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

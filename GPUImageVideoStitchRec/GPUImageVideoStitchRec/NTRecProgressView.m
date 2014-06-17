@@ -9,17 +9,12 @@
 #import "NTRecProgressView.h"
 
 @implementation NTRecProgressView
-{
-    BOOL    isRecording;
-    NSTimer *timer;
-    NSDate  *startedAt;
-}
 
-- (id)initWithFrame:(CGRect)frame
+- (instancetype)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
     if (self) {
-        // Initialization code
+        self.opaque = NO;
     }
     return self;
 }
@@ -42,19 +37,19 @@
     float w         = self.frame.size.width;
     float h         = self.frame.size.height;
     
-    if (isRecording){
-        float length    = self.composition.duration / maxDuration * w;
+    if (!self.composition.isLastTakeReadyToRemove){
+        float length    = [self.composition recordedDuration] / maxDuration * w;
         CGRect fixed    = CGRectMake(0, 0, length, h);
         CGContextSetRGBFillColor(context, 1.0, 0.0, 0.0, 1.0);
         CGContextFillRect(context, fixed);
         CGContextSetRGBFillColor(context, 1.0, 1.0, 0.0, 1.0);
 
-        float addedDuration     = [startedAt timeIntervalSinceNow] * -1;
+        float addedDuration     = [self.composition recordingDuration];
         float addedLength       = addedDuration / maxDuration * w;
         CGRect added            = CGRectMake(length, 0, addedLength, h);
         CGContextFillRect(context, added);
     } else {
-        CGSize range = [self.composition lastTakeRange];
+        CGSize range = [self.composition lastVideoClipRange];
         float addedAt           = range.width   / maxDuration * w;
         float addedLength       = range.height / maxDuration * w;
         
@@ -65,31 +60,30 @@
         
         CGRect added            = CGRectMake(addedAt, 0, addedLength, h);
         CGContextFillRect(context, added);
-        
     }
 }
 
-- (void) startRecording
+- (void) setComposition:(NTVideoComposition *)composition
 {
-    isRecording = YES;
-    startedAt = [NSDate date];
-    timer = [NSTimer scheduledTimerWithTimeInterval: 0.1 target:self selector:@selector(timerFired) userInfo:nil repeats:YES];
+    _composition = composition;
+    
+    if (composition){
+        [composition addObserver: self forKeyPath: @"isLastTakeReadyToRemove" options: NSKeyValueObservingOptionNew context: nil];
+        [composition addObserver: self forKeyPath:@"duration" options: NSKeyValueObservingOptionInitial context: nil];
+
+    } else {
+        [composition removeObserver: self forKeyPath: @"isLastTakeReadyToRemove"];
+        [composition removeObserver: self forKeyPath: @"duration"];
+    }
 }
 
-- (void) stopRecroding
+- (void) observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
-    isRecording = NO;
-    
-    startedAt = nil;
-    [timer invalidate];
-    timer = nil;
-    
-    [self setNeedsDisplay];
-}
-
-- (void) timerFired
-{
-    [self setNeedsDisplay];
+    if (self.composition == object){
+        if ( [keyPath isEqualToString: @"isLastTakeReadyToRemove"] || [keyPath isEqualToString: @"duration"]){
+            [self setNeedsDisplay];
+        }
+    }
 }
 
 @end

@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface NTVideoTake : NSObject
+@interface NTVideoClip : NSObject
 
 @property (nonatomic, strong) NSURL  *videoPath;
 @property (nonatomic) float duration;

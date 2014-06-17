@@ -13,7 +13,4 @@
 
 @property (nonatomic, strong) NTVideoComposition *composition;
 
-- (void) startRecording;
-- (void) stopRecroding;
-
 @end

@@ -8,7 +8,7 @@
 
 #import "NTViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "NTVideoTake.h"
+#import "NTVideoClip.h"
 #import "NTVideoComposition.h"
 #import "NTRecProgressView.h"
 
@@ -23,7 +23,7 @@
     NTRecProgressView       *progressView;
     
     NTVideoComposition      *composition;
-    NTVideoTake             *videoTake;
+    NTVideoClip             *videoTake;
     NSURL *movieURL;
 }
 
@@ -42,7 +42,7 @@
     videoView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     [self.view insertSubview: videoView atIndex: 0];
     
-    //
+    // Progress View
     progressView = [[NTRecProgressView alloc] initWithFrame: CGRectMake(0, 0, 320, 60)];
     [videoView addSubview: progressView];
     
@@ -56,6 +56,7 @@
     
     // Tap Gesture
     UILongPressGestureRecognizer *gesture = [[UILongPressGestureRecognizer alloc] initWithTarget: self action: @selector(longPressGestureRecognized:)];
+    gesture.minimumPressDuration = 0.25;
     [videoView addGestureRecognizer: gesture];
     
     // Setting
@@ -78,32 +79,32 @@
 - (void) startRecording
 {
     [self doesStartRecording];
-    NSLog(@"Started");
 }
 
 - (void) doesStartRecording
 {
-    // Record Settings
-    NSString *path = [NSString stringWithFormat: @"Documents/Movie_%ld.m4v", random()];
-    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:path];
-    unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
-    movieURL        = [NSURL fileURLWithPath:pathToMovie];
-    movieWriter     = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(480.0, 640.0)];
- 
-    videoTake = [[NTVideoTake alloc] init];
-    videoTake.videoPath = movieURL;
-    [composition addTake: videoTake];
+    if ([composition canAddVideoClip]){
+        // Record Settings
+        NSTimeInterval time = [NSDate timeIntervalSinceReferenceDate] * 1000; // Create random unique path for the temporary video file
+        NSString *path = [NSString stringWithFormat: @"Movie_%d.m4v", (int)time];
+        NSString *pathToMovie = [NSTemporaryDirectory() stringByAppendingPathComponent:path];
+        unlink([pathToMovie UTF8String]); // If a file already exists, AVAssetWriter won't let you record new frames, so delete the old movie
+        movieURL        = [NSURL fileURLWithPath:pathToMovie];
+        movieWriter     = [[GPUImageMovieWriter alloc] initWithMovieURL:movieURL size:CGSizeMake(480.0, 640.0)];
+     
+        videoTake = [[NTVideoClip alloc] init];
+        videoTake.videoPath = movieURL;
+        [composition addVideoClip: videoTake];
 
-    [videoCamera addTarget: movieWriter];
-    videoCamera.audioEncodingTarget = movieWriter;
-    [movieWriter startRecording];
-    
-    [progressView startRecording];
+        [videoCamera addTarget: movieWriter];
+        videoCamera.audioEncodingTarget = movieWriter;
+        [movieWriter startRecording];
+    }
 }
 
 - (void) pauseRecording
 {
-    NSLog(@"Paused");
+    [composition setRecording: NO];
 
     [videoCamera removeTarget:movieWriter];
     videoCamera.audioEncodingTarget = nil;
@@ -114,8 +115,6 @@
     [movieWriter finishRecordingWithCompletionHandler:^{
 
     }];
-    [progressView setNeedsDisplay];
-    [progressView stopRecroding];
 }
 
 - (void) longPressGestureRecognized:(UILongPressGestureRecognizer *) gesture
@@ -134,26 +133,27 @@
 
 - (IBAction) removeLastTake:(id)sender
 {
-    [composition removeLastTake];
+    if ([composition isLastTakeReadyToRemove]){
+        [composition removeLastVideoClip];
+    } else {
+        composition.isLastTakeReadyToRemove = YES;
+    }
     [progressView setNeedsDisplay];
 }
 
 - (IBAction) stopRecording:(id)sender
 {
-//    [videoCamera removeTarget:movieWriter];
-//    videoCamera.audioEncodingTarget = nil;
-    [composition concatenateVideos];
-    
-//    [movieWriter finishRecordingWithCompletionHandler:^{
-//        [[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:movieURL completionBlock:^(NSURL *assetURL, NSError *error) {
-//            if (error == nil) {
-//                NSLog(@"Movie saved");
-//            } else {
-//                NSLog(@"Error %@", error);
-//            }
-//        }];
-//        
-//    }];
+    [composition concatenateVideosWithCompletionHandler:^(AVAssetExportSessionStatus status){
+        if (status == AVAssetExportSessionStatusCompleted){
+            [[[ALAssetsLibrary alloc] init] writeVideoAtPathToSavedPhotosAlbum:movieURL completionBlock:^(NSURL *assetURL, NSError *error) {
+                if (error == nil) {
+                    NSLog(@"Movie saved");
+                } else {
+                    NSLog(@"Error %@", error);
+                }
+            }];
+        }
+    }];
 }
 
 @end
