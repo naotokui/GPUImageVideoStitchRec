@@ -84,6 +84,8 @@
 - (void) doesStartRecording
 {
     if ([composition canAddVideoClip]){
+        [composition setRecording: YES];
+        
         // Record Settings
         NSTimeInterval time = [NSDate timeIntervalSinceReferenceDate] * 1000; // Create random unique path for the temporary video file
         NSString *path = [NSString stringWithFormat: @"Movie_%d.m4v", (int)time];

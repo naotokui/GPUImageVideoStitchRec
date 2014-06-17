@@ -13,7 +13,7 @@ static float kMaxDuration = 20.0;
 
 @implementation NTVideoComposition
 {
-    NSMutableArray *takes;
+    NSMutableArray *clips;
     
     // For checking recording duration
     NSDate          *startedAt;
@@ -29,27 +29,28 @@ static float kMaxDuration = 20.0;
 {
     self = [super init];
     if (self) {
-        takes = [[NSMutableArray alloc] init];
+        clips = [[NSMutableArray alloc] init];
     }
     return self;
 }
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"composition contains %ld takes", [takes count]];
+    return [NSString stringWithFormat:@"composition contains %ld takes", [clips count]];
 }
 
 - (void) addVideoClip: (NTVideoClip *) take
 {
     float duration = [self duration];
     take.startAt = duration;
-    [takes addObject: take];
+    [clips addObject: take];
     self.isLastTakeReadyToRemove = NO;
+    [self notifyDurationChanges];
 }
 
 - (void) removeLastVideoClip
 {
-    [takes removeLastObject];
+    [clips removeLastObject];
     self.isLastTakeReadyToRemove = NO;
 }
 
@@ -60,7 +61,7 @@ static float kMaxDuration = 20.0;
 
 - (CGSize) lastVideoClipRange
 {
-    NTVideoClip *take = [takes lastObject];
+    NTVideoClip *take = [clips lastObject];
     return  take.timeRange;
 }
 
@@ -77,9 +78,9 @@ static float kMaxDuration = 20.0;
 
     if (_isRecording){
         startedAt = [NSDate date];
-        timer = [NSTimer scheduledTimerWithTimeInterval: 0.1 target:self selector:@selector(timerFired) userInfo:nil repeats:YES];
+        timer = [NSTimer scheduledTimerWithTimeInterval: 0.1 target:self selector:@selector(notifyDurationChanges) userInfo:nil repeats:YES];
     } else {
-        [self timerFired];
+        [self notifyDurationChanges];
         [timer invalidate]; timer = nil;
         startedAt = nil;
     }
@@ -96,13 +97,13 @@ static float kMaxDuration = 20.0;
 - (float) recordedDuration
 {
     float dur = 0;
-    for (NTVideoClip *take in takes){
+    for (NTVideoClip *take in clips){
         dur += take.duration;
     }
     return dur;
 }
 
-- (void) timerFired
+- (void) notifyDurationChanges
 {
     [self willChangeValueForKey: @"duration"];
     [self didChangeValueForKey: @"duration"];
@@ -121,7 +122,7 @@ static float kMaxDuration = 20.0;
     
     
     NSMutableArray *assets = [NSMutableArray array];
-    for (NTVideoClip *take in takes){
+    for (NTVideoClip *take in clips){
         [assets addObject: [take videoAsset]];
     }
     AVMutableComposition *composition = [AVMutableComposition composition];
